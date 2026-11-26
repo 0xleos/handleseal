@@ -1,10 +1,10 @@
 # Handleseal 部署记录
 
-本文只记录已经冻结的字节码和 CREATE2 预测地址。**现在不要部署。**
+本文只记录已经冻结的字节码和 CREATE2 地址。合约已经在链 56 上，BscScan 源码为完全匹配。**不要再广播一笔部署。**
 
-部署会向链 56 广播一笔交易并花费 gas。那是以后单独的付费步骤：必须重新报价，并向你明确确认费用和这笔交易之后，才能广播。本仓库没有广播脚本，也不包含私钥。
+本仓库没有广播脚本，也不包含私钥。再部署会花费 gas，必须重新报价并得到明确确认之后才能广播。
 
-Do not broadcast this deployment. It spends gas and is a later step. Quote the fee again and wait for an explicit confirmation before any transaction is sent.
+The contract is already on chain 56. Do not broadcast another deployment. This repository has no broadcast script and no key.
 
 ## Compiler
 
@@ -63,11 +63,9 @@ On 2026-11-26, at block 135820196, `eth_getCode` of the predicted address was em
 
 `forge test` includes `test_predictedCreate2Address`, which recomputes the address from `type(Handleseal).creationCode` and the salt above.
 
-## After a later deploy
+## On chain
 
-1. Confirm `eth_getCode(0x79E48BE7a6AfA67eE82aF4d3cA75387dE7F599F9)` equals `deploy/runtime.hex`.
-2. Verify the source on BscScan with the compiler settings in the table above.
-3. Read `REGISTRY()` and confirm it is `0x60B9262456dE011F7d15a54CdD8c48bAaa8B022F`.
-4. Confirm there is still no `owner`, `pause`, or fee function.
-
-The BscScan link in the site is a placeholder until those steps are done.
+1. `eth_getCode(0x79E48BE7a6AfA67eE82aF4d3cA75387dE7F599F9)` matches `deploy/runtime.hex`.
+2. BscScan verifies the source as an exact match, with the compiler settings in the table above: <https://bscscan.com/address/0x79E48BE7a6AfA67eE82aF4d3cA75387dE7F599F9#code>
+3. `REGISTRY()` is `0x60B9262456dE011F7d15a54CdD8c48bAaa8B022F`.
+4. There is still no `owner`, `pause`, or fee function.

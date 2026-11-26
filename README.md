@@ -8,7 +8,7 @@ Handleseal lets an Agent ID seal a keccak256 hash. Another Agent ID can witness 
 
 链：56。身份注册表（只读）：`0x60B9262456dE011F7d15a54CdD8c48bAaa8B022F`。
 
-预测合约地址（**尚未部署**）：`0x79E48BE7a6AfA67eE82aF4d3cA75387dE7F599F9`。数字和字节码见 [DEPLOY.md](DEPLOY.md)。
+合约地址（链 56，已部署，BscScan 源码完全匹配）：`0x79E48BE7a6AfA67eE82aF4d3cA75387dE7F599F9`。数字和字节码见 [DEPLOY.md](DEPLOY.md)。
 
 ## 这是什么
 
@@ -35,7 +35,7 @@ python3 -m http.server 38471 --directory frontend
 - **盖印**：只连接注入的 EIP-1193 钱包（例如钱包内置浏览器）。在本地对文本或文件做 keccak256，文件不会上传。可选公开标签。先核对，再提交。钱包还会再确认一次。
 - **核验**：只按印记编号或内容哈希。没有按名字查钱包的入口。
 - **公开印**：只列出作者自愿写了标签的印，不是 Agent ID 名录。
-- **文档**：方法、所有者权限、BscScan 占位链接，以及 `baw` 的预览 → 确认 → 执行示例。
+- **文档**：方法、所有者权限、BscScan 上已验证的源码，以及 `baw` 的预览 → 确认 → 执行示例。
 
 获得 Agent ID 的技术说明：<https://docs.space.id/agent-id>。本站不能代你注册。
 
@@ -51,14 +51,14 @@ python3 -m http.server 38471 --directory frontend
 - 没有后端，没有用户账户，没有服务端会话，也不使用第三方 Agentic Wallet 二维码或配对码登录。
 - 不是按 Agent ID 名字查询他人钱包的工具。
 - 本仓库不部署、不广播交易、不花费 gas，也不提交黑客松问卷。
-- 部署是以后的付费步骤，必须重新报价并得到你的明确确认。见 [DEPLOY.md](DEPLOY.md)。
+- 合约已经在链 56 上。不要从本仓库再广播一笔部署交易。见 [DEPLOY.md](DEPLOY.md)。
 - 不承诺收益、奖励或回报。
 
-## 部署之后如何在 BscScan 核对
+## 如何在 BscScan 核对
 
-1. 打开 <https://bscscan.com/address/0x79E48BE7a6AfA67eE82aF4d3cA75387dE7F599F9#code>。在部署和源码验证完成之前，这只是占位链接，代码栏为空不等于核对通过。
+1. 打开 <https://bscscan.com/address/0x79E48BE7a6AfA67eE82aF4d3cA75387dE7F599F9#code>。源码验证为完全匹配。
 2. 确认 `eth_getCode` 与 `deploy/runtime.hex` 一致，keccak256 为 `0x3f6d8141bdb5a280e44aaa59eec99502e0569f1044d852857921ec47524952fb`。
-3. 用 solc `0.8.28+commit.7893614a`、优化器开启、200 次、Cancun、关闭 via-IR、无构造参数，验证源码。
+3. 编译设置是 solc `0.8.28+commit.7893614a`、优化器开启、200 次、Cancun、关闭 via-IR、无构造参数。
 4. 读 `REGISTRY()`，应为 `0x60B9262456dE011F7d15a54CdD8c48bAaa8B022F`。
 5. 确认没有 `owner`、`pause` 或费用函数。
 
@@ -96,11 +96,11 @@ The on-chain handle has no `.ai` suffix. The site displays `218` as `218.ai`. Th
 
 **Owner permissions: none.**
 
-The predicted CREATE2 address is `0x79E48BE7a6AfA67eE82aF4d3cA75387dE7F599F9`. It was empty on chain 56 when this repository was prepared. Deploying it is a later transaction that spends gas. Quote that cost again and get an explicit confirmation before broadcasting anything. See [DEPLOY.md](DEPLOY.md).
+The contract is deployed on chain 56 at `0x79E48BE7a6AfA67eE82aF4d3cA75387dE7F599F9`. BscScan shows an exact source match. Do not broadcast another deployment from this repository. See [DEPLOY.md](DEPLOY.md).
 
 Run the site with `python3 -m http.server 38471 --directory frontend`. Run `forge test` and `script/predict_create2.sh --check`. The optional fork test is read-only and runs only when `BSC_RPC_URL` is set.
 
-After deployment, compare runtime bytecode with `deploy/runtime.hex` on BscScan, verify the source with the settings in DEPLOY.md, and confirm `REGISTRY()` is the Agent ID registry above. The explorer link in the docs page is a placeholder until then.
+BscScan verifies that source as an exact match. Runtime bytecode matches `deploy/runtime.hex`, and `REGISTRY()` is the Agent ID registry above.
 
 Red lines: no keys or pairing codes, no backend or accounts, no QR pairing login, no handle-to-wallet directory, no broadcast from this repo, and no promise of yield.
 

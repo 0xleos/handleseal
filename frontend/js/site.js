@@ -31,6 +31,8 @@
       switch: "Switch this wallet to chain 56, then try again.",
       preimageYes: "The local hash matches this seal.",
       preimageNo: "The local hash does not match this seal.",
+      lookingUp: "Looking up this seal on chain 56.",
+      witnessUnread: "The seal is shown. The witness list did not load.",
       noLabeled: "No labeled seals were found in the recent block window.",
       yourNone: "This account has not sealed anything yet.",
       sealOk: "Seal recorded.",
@@ -67,6 +69,8 @@
       switch: "请把钱包切到链 56 后再试。",
       preimageYes: "本地哈希与这枚印一致。",
       preimageNo: "本地哈希与这枚印不一致。",
+      lookingUp: "正在链 56 上查询这枚印。",
+      witnessUnread: "印记已经显示。见证列表没有读到。",
       noLabeled: "最近的区块窗口里没有带公开标签的印记。",
       yourNone: "这个账户还没有盖过印。",
       sealOk: "印记已记下。",
@@ -154,24 +158,88 @@
     return String(value);
   }
 
-  async function rpc(method, params) {
-    let last = new Error("RPC");
-    for (const url of config.rpcUrls) {
-      try {
-        const response = await fetch(url, {
-          method: "POST",
-          headers: { "content-type": "application/json" },
-          body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: method, params: params })
-        });
-        if (!response.ok) throw new Error("HTTP " + response.status);
-        const body = await response.json();
-        if (body.error) throw new Error(body.error.message || "RPC");
-        return body.result;
-      } catch (err) {
-        last = err;
+  function withTimeout(promise, ms) {
+    return new Promise(function (resolve, reject) {
+      const timer = setTimeout(function () {
+        const error = new Error("RPC");
+        error.code = "RPC";
+        reject(error);
+      }, ms);
+      Promise.resolve(promise).then(function (value) {
+        clearTimeout(timer);
+        resolve(value);
+      }, function (err) {
+        clearTimeout(timer);
+        reject(err);
+      });
+    });
+  }
+
+  // Resolves on the first attempt that gets an answer. Network failures wait
+  // for another endpoint. A revert is an answer, so a slow mirror cannot hide it.
+  function firstAnswer(promises) {
+    return new Promise(function (resolve, reject) {
+      const list = Array.from(promises);
+      if (!list.length) {
+        const error = new Error("RPC");
+        error.code = "RPC";
+        reject(error);
+        return;
       }
-    }
-    throw last;
+      let pending = list.length;
+      list.forEach(function (p) {
+        Promise.resolve(p).then(resolve, function () {
+          pending -= 1;
+          if (pending === 0) {
+            const error = new Error("RPC");
+            error.code = "RPC";
+            reject(error);
+          }
+        });
+      });
+    });
+  }
+
+  const RPC_TIMEOUT_MS = 8000;
+
+  function revertError(payload) {
+    const info = payload && payload.error;
+    const error = new Error((info && info.message) || "execution reverted");
+    error.code = "CALL_EXCEPTION";
+    if (info && typeof info.data === "string") error.data = info.data;
+    return error;
+  }
+
+  async function rpc(method, params) {
+    const body = JSON.stringify({ jsonrpc: "2.0", id: 1, method: method, params: params });
+    const controllers = [];
+    const attempts = config.rpcUrls.map(function (url) {
+      const controller = typeof AbortController === "function" ? new AbortController() : null;
+      if (controller) controllers.push(controller);
+      const attempt = fetch(url, {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: body,
+        signal: controller ? controller.signal : undefined
+      }).then(function (response) {
+        if (!response.ok) throw new Error("HTTP " + response.status);
+        return response.json();
+      }).then(function (payload) {
+        if (payload && payload.result !== undefined && !payload.error) {
+          return { ok: true, result: payload.result };
+        }
+        if (payload && payload.error) return { ok: false, error: revertError(payload) };
+        throw new Error("RPC");
+      });
+      return withTimeout(attempt, RPC_TIMEOUT_MS).catch(function (err) {
+        if (controller) controller.abort();
+        throw err;
+      });
+    });
+    const settled = await firstAnswer(attempts);
+    controllers.forEach(function (controller) { controller.abort(); });
+    if (!settled.ok) throw settled.error;
+    return settled.result;
   }
 
   async function providerRequest(method, params) {
@@ -186,15 +254,30 @@
 
   async function ethCall(data) {
     const tx = { to: config.contractAddress, data: data };
+    const attempts = [rpc("eth_call", [tx, "latest"]).then(function (result) {
+      return { ok: true, result: result };
+    }, function (err) {
+      if (!extractData(err)) throw err;
+      return { ok: false, error: err };
+    })];
     if (window.ethereum && window.ethereum.request) {
-      try {
+      attempts.push(withTimeout((async function () {
         const chainId = await window.ethereum.request({ method: "eth_chainId" });
-        if (parseInt(chainId, 16) === config.chainId) {
-          return await window.ethereum.request({ method: "eth_call", params: [tx, "latest"] });
-        }
-      } catch (err) { /* fall through to public RPC */ }
+        if (parseInt(chainId, 16) !== config.chainId) throw new Error("RPC");
+        const result = await window.ethereum.request({ method: "eth_call", params: [tx, "latest"] });
+        return { ok: true, result: result };
+      })(), RPC_TIMEOUT_MS).catch(function (err) {
+        const dataHex = extractData(err);
+        if (!dataHex) throw err;
+        const error = new Error(err && err.message ? err.message : "execution reverted");
+        error.code = "CALL_EXCEPTION";
+        error.data = dataHex;
+        return { ok: false, error: error };
+      }));
     }
-    return rpc("eth_call", [tx, "latest"]);
+    const settled = await firstAnswer(attempts);
+    if (!settled.ok) throw settled.error;
+    return settled.result;
   }
 
   async function read(name, args) {
@@ -221,12 +304,8 @@
   function explain(error) {
     const code = error && (error.code || (error.error && error.error.code));
     if (code === 4001 || code === "ACTION_REJECTED") return t("rejected");
-    if (code === "NO_CODE" || (error && error.message === "NO_CODE")) return t("notDeployed");
     if (code === "NO_WALLET" || (error && error.message === "NO_WALLET")) return t("noWallet");
     if (code === "TIMEOUT" || (error && error.message === "TIMEOUT")) return t("timeout");
-    if (code === "RPC" || (error && /RPC|Failed to fetch|NetworkError/i.test(String(error.message || "")))) {
-      return t("rpcFail");
-    }
     const data = extractData(error);
     if (data && ethersOk()) {
       try {
@@ -244,6 +323,11 @@
         if (key) return t(key);
       } catch (err) { /* not a known error */ }
     }
+    if (code === "NO_CODE" || (error && error.message === "NO_CODE")) return t("notDeployed");
+    if (code === "RPC" || (error && /Failed to fetch|NetworkError|HTTP \d+/i.test(String(error.message || "")))) {
+      return t("rpcFail");
+    }
+    if (code === "RPC") return t("rpcFail");
     return t("genericFail");
   }
 

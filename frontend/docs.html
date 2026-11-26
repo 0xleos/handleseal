@@ -36,7 +36,7 @@
 
     <section class="section" id="methods">
       <h2><span class="en">Contract methods</span><span class="zh">合约方法</span></h2>
-      <p class="muted"><span class="en">Predicted address, not yet deployed. Change it in <code>frontend/js/config.js</code> only if a later deploy uses a different address.</span><span class="zh">这是预测地址，尚未部署。只有以后的部署地址不同时，才改 <code>frontend/js/config.js</code>。</span></p>
+      <p class="muted"><span class="en">Live contract on chain 56. BscScan shows an exact source match. Change the address in <code>frontend/js/config.js</code> only if a later deploy uses a different one.</span><span class="zh">这是链 56 上已经部署的合约。BscScan 显示源码完全匹配。只有以后的部署地址不同时，才改 <code>frontend/js/config.js</code>。</span></p>
       <p class="mono">0x79E48BE7a6AfA67eE82aF4d3cA75387dE7F599F9</p>
       <div class="table-scroll">
       <table>
@@ -79,9 +79,8 @@
 
     <section class="section" id="bscscan">
       <h2>BscScan</h2>
-      <p><span class="en">After deployment, open the address and confirm the runtime bytecode matches <code>deploy/runtime.hex</code> and the keccak in <code>DEPLOY.md</code>. Source verification uses solc 0.8.28, optimizer on, 200 runs, Cancun, no via-IR. Until then the explorer page has no contract code.</span><span class="zh">部署之后，打开这个地址，核对运行时字节码是否与 <code>deploy/runtime.hex</code> 以及 <code>DEPLOY.md</code> 里的 keccak 一致。源码验证使用 solc 0.8.28、优化器开启、200 次、Cancun、不用 via-IR。在那之前，浏览器页面上没有合约代码。</span></p>
+      <p><span class="en">The contract is deployed at this address, and BscScan verifies the source as an exact match. Compiler settings: solc 0.8.28, optimizer on, 200 runs, Cancun, via-IR off. The runtime bytecode matches <code>deploy/runtime.hex</code> and the keccak in <code>DEPLOY.md</code>.</span><span class="zh">合约已经部署在这个地址，BscScan 的源码验证为完全匹配。编译设置是 solc 0.8.28、优化器开启、200 次、Cancun、不用 via-IR。运行时字节码与 <code>deploy/runtime.hex</code> 以及 <code>DEPLOY.md</code> 里的 keccak 一致。</span></p>
       <p><a href="https://bscscan.com/address/0x79E48BE7a6AfA67eE82aF4d3cA75387dE7F599F9#code">bscscan.com/address/0x79E48BE7a6AfA67eE82aF4d3cA75387dE7F599F9#code</a></p>
-      <p class="muted"><span class="en">Placeholder until the contract is deployed and the source is verified. Do not treat an empty code tab as a verified match.</span><span class="zh">这是占位链接，要等合约部署并且源码验证之后才有意义。代码栏为空，不能当成已经核对通过。</span></p>
     </section>
 
     <section class="section" id="baw">
@@ -121,7 +120,7 @@ baw contract-call preview \
           <li><span class="en">No private keys, seed phrases, API secrets, or pairing codes.</span><span class="zh">不接收私钥、助记词、API 密钥或配对码。</span></li>
           <li><span class="en">No backend, no accounts, no server session, no third-party QR or pairing-code login.</span><span class="zh">没有后端、没有账户、没有服务端会话，也不使用第三方二维码或配对码登录。</span></li>
           <li><span class="en">No general lookup of other people's wallets by Agent ID name.</span><span class="zh">没有按 Agent ID 名字查询别人钱包的通用功能。</span></li>
-          <li><span class="en">This repository does not deploy or broadcast. Deployment is a later paid step and must be quoted again and confirmed.</span><span class="zh">本仓库不部署、不广播。部署是以后单独的付费步骤，必须重新报价并得到确认。</span></li>
+          <li><span class="en">This site does not deploy a contract or broadcast one for you. The contract above is already on chain 56.</span><span class="zh">本站不会替你部署或广播合约。上面的合约已经在链 56 上。</span></li>
           <li><span class="en">No yield, rewards, or returns are promised.</span><span class="zh">不承诺收益、奖励或回报。</span></li>
         </ul>
       </div>

@@ -8,16 +8,28 @@
   const localFile = document.getElementById("preimage-file");
   const localOut = document.getElementById("preimage-out");
   let currentHash = "";
+  let lookupGen = 0;
 
   function params() {
     return new URLSearchParams(location.search);
   }
 
-  async function showSeal(id) {
+  function appendWitnesses(card, list) {
+    if (!list.length) return;
+    const ul = document.createElement("ul");
+    list.forEach(function (item) {
+      const li = document.createElement("li");
+      li.textContent = HS.formatHandle(item.handle) + " · " + item.witness + " · " + HS.formatTime(item.witnessedAt);
+      ul.append(li);
+    });
+    const actions = card.querySelector(".btn-row");
+    card.insertBefore(ul, actions);
+  }
+
+  async function showSeal(id, gen) {
     const info = await HS.read("getSeal", [id]);
+    if (gen !== lookupGen) return;
     const seal = info.info || info[0];
-    const witnesses = await HS.read("witnessesOf", [id]);
-    const list = witnesses[0] || [];
     currentHash = seal.contentHash;
     const card = HS.el("article", "card stack");
     card.append(HS.el("h2", "", "#" + id));
@@ -36,15 +48,6 @@
       dl.append(HS.el("dt", "", row[0]), HS.el("dd", row[0] === "Label" ? "" : "mono", row[1]));
     });
     card.append(dl);
-    if (list.length) {
-      const ul = document.createElement("ul");
-      list.forEach(function (item) {
-        const li = document.createElement("li");
-        li.textContent = HS.formatHandle(item.handle) + " · " + item.witness + " · " + HS.formatTime(item.witnessedAt);
-        ul.append(li);
-      });
-      card.append(ul);
-    }
     const actions = HS.el("div", "btn-row");
     const witnessBtn = HS.el("button", "btn", "");
     witnessBtn.type = "button";
@@ -54,7 +57,18 @@
     actions.append(witnessBtn);
     card.append(actions);
     out.append(card);
+    Array.from(out.children).forEach(function (child) {
+      if (child !== card && child.classList.contains("notice")) child.remove();
+    });
     compareLocal();
+    try {
+      const witnesses = await HS.read("witnessesOf", [id]);
+      if (gen !== lookupGen) return;
+      appendWitnesses(card, witnesses[0] || []);
+    } catch (error) {
+      if (gen !== lookupGen) return;
+      card.insertBefore(HS.el("p", "muted", HS.t("witnessUnread")), actions);
+    }
   }
 
   function reviewWitness(id, card) {
@@ -86,40 +100,53 @@
     card.append(panel);
   }
 
+  function showNotice(text) {
+    out.replaceChildren(HS.el("p", "notice", text));
+  }
+
   async function lookup() {
+    const gen = ++lookupGen;
     out.replaceChildren();
     currentHash = "";
     localOut.textContent = "";
     const id = idInput.value.trim();
     const hash = hashInput.value.trim();
     if (!id && !hash) return;
+    showNotice(HS.t("lookingUp"));
     try {
       const present = await HS.hasCode();
+      if (gen !== lookupGen) return;
       if (!present) {
-        out.append(HS.el("p", "notice", HS.t("notDeployed")));
+        showNotice(HS.t("notDeployed"));
         return;
       }
       if (id) {
         if (!/^\d+$/.test(id) || id === "0") {
-          out.append(HS.el("p", "notice", HS.t("unknown")));
+          showNotice(HS.t("unknown"));
           return;
         }
-        await showSeal(id);
+        await showSeal(id, gen);
         return;
       }
       if (!/^0x[0-9a-fA-F]{64}$/.test(hash)) {
-        out.append(HS.el("p", "notice", HS.t("genericFail")));
+        showNotice(HS.t("genericFail"));
         return;
       }
       const found = await HS.read("sealsByHash", [hash]);
+      if (gen !== lookupGen) return;
       const ids = Array.from(found[0] || []);
       if (!ids.length) {
-        out.append(HS.el("p", "notice", HS.t("unknown")));
+        showNotice(HS.t("unknown"));
         return;
       }
-      for (const item of ids) await showSeal(HS.asString(item));
+      out.replaceChildren();
+      for (const item of ids) {
+        if (gen !== lookupGen) return;
+        await showSeal(HS.asString(item), gen);
+      }
     } catch (error) {
-      out.append(HS.el("p", "notice", HS.explain(error)));
+      if (gen !== lookupGen) return;
+      showNotice(HS.explain(error));
     }
   }
 

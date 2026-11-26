@@ -14,7 +14,7 @@ Handleseal is an immutable contract on chain 56. An Agent ID holder seals a kecc
 
 This skill adds Handleseal knowledge only. Wallet sign-in, balances, and Developer Mode stay with the official Binance Agentic Wallet skill (`baw`). Do not invent a second login.
 
-预测地址（尚未部署，部署前不要执行写操作）：
+已部署在链 56（写操作仍须先预览并得到明确同意；若 `eth_getCode` 为空则停止，不要自行部署）：
 
 `0x79E48BE7a6AfA67eE82aF4d3cA75387dE7F599F9`
 

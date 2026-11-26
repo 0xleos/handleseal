@@ -86,6 +86,8 @@ BSC_RPC_URL=https://bsc-dataseed.bnbchain.org forge test --match-test testFork_l
 
 把本仓库公开为名为 `handleseal` 的 GitHub 仓库之后，在仓库设置里打开 Pages，来源选 GitHub Actions。`.github/workflows/pages.yml` 会发布 `frontend/`。页面地址会是 `https://<github 用户名>.github.io/handleseal/`。也可以直接把 `frontend/` 当作静态文件打开或托管。
 
+60 秒产品演示：<https://0xleos.github.io/handleseal/handleseal-demo.mp4>
+
 第三方库：`frontend/vendor/ethers.umd.min.js` 是 MIT 许可的 ethers.js 5.7.2，只用于本地 keccak256 和 ABI 编码。见 `frontend/vendor/SOURCES.txt`。
 
 ## English

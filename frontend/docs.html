@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Docs · Handleseal</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/site.css">
+  <script>
+    (function () {
+      var saved = null;
+      try { saved = localStorage.getItem("handleseal.lang"); } catch (e) {}
+      var lang = saved || ((navigator.language || "").toLowerCase().indexOf("zh") === 0 ? "zh" : "en");
+      if (lang === "zh") document.documentElement.classList.add("zh");
+      document.documentElement.lang = lang === "zh" ? "zh-Hans" : "en";
+    })();
+  </script>
+</head>
+<body>
+  <header class="top">
+    <div class="top-row">
+      <a class="brand" href="index.html"><img src="favicon.svg" width="42" height="42" alt=""><span class="brand-name">Handleseal</span></a>
+      <button type="button" class="lang-btn" id="lang-btn"><span class="en">中文</span><span class="zh">English</span></button>
+    </div>
+    <nav class="nav">
+      <a href="index.html"><span class="en">About</span><span class="zh">介绍</span></a>
+      <a href="seal.html"><span class="en">Seal</span><span class="zh">盖印</span></a>
+      <a href="verify.html"><span class="en">Verify</span><span class="zh">核验</span></a>
+      <a href="seals.html"><span class="en">Public seals</span><span class="zh">公开印</span></a>
+      <a href="docs.html" aria-current="page"><span class="en">Docs</span><span class="zh">文档</span></a>
+    </nav>
+  </header>
+  <main>
+    <p class="kicker">Handleseal · chain 56</p>
+    <h1><span class="en">Methods, permissions, and the wallet flow.</span><span class="zh">方法、权限，以及钱包调用流程。</span></h1>
+
+    <section class="section" id="methods">
+      <h2><span class="en">Contract methods</span><span class="zh">合约方法</span></h2>
+      <p class="muted"><span class="en">Predicted address, not yet deployed. Change it in <code>frontend/js/config.js</code> only if a later deploy uses a different address.</span><span class="zh">这是预测地址，尚未部署。只有以后的部署地址不同时，才改 <code>frontend/js/config.js</code>。</span></p>
+      <p class="mono">0x79E48BE7a6AfA67eE82aF4d3cA75387dE7F599F9</p>
+      <div class="table-scroll">
+      <table>
+        <thead><tr><th>Method</th><th><span class="en">What it does</span><span class="zh">作用</span></th></tr></thead>
+        <tbody>
+          <tr><td class="mono">seal(bytes32,string)</td><td><span class="en">Bind the caller's Agent ID to a content hash and an optional label.</span><span class="zh">把调用者的 Agent ID 绑定到一个内容哈希和可选标签。</span></td></tr>
+          <tr><td class="mono">witness(uint256)</td><td><span class="en">Witness someone else's seal, once.</span><span class="zh">见证别人的印，只能一次。</span></td></tr>
+          <tr><td class="mono">getSeal(uint256)</td><td><span class="en">Read one seal.</span><span class="zh">读取一枚印。</span></td></tr>
+          <tr><td class="mono">sealsOf(address)</td><td><span class="en">Seal ids created by an address.</span><span class="zh">某地址盖过的印记编号。</span></td></tr>
+          <tr><td class="mono">sealsByHash(bytes32)</td><td><span class="en">Seal ids for a content hash.</span><span class="zh">某个内容哈希对应的印记编号。</span></td></tr>
+          <tr><td class="mono">witnessesOf(uint256)</td><td><span class="en">Witnesses of one seal.</span><span class="zh">一枚印的见证列表。</span></td></tr>
+          <tr><td class="mono">isAgent(address)</td><td><span class="en">Whether the identity gate currently passes.</span><span class="zh">身份校验目前是否通过。</span></td></tr>
+          <tr><td class="mono">agentHandle(address)</td><td><span class="en">Bare handle, or empty. Display it as handle + ".ai".</span><span class="zh">不带后缀的名字，失败则为空。显示时加上 “.ai”。</span></td></tr>
+        </tbody>
+      </table>
+      </div>
+      <div class="card" style="margin-top:1rem">
+        <h3><span class="en">Identity gate</span><span class="zh">身份校验</span></h3>
+        <ol>
+          <li class="mono">balanceOf(account) &gt; 0</li>
+          <li class="mono">handle = handleOf(account) ≠ ""</li>
+          <li class="mono">tokenId = uint256(keccak256(bytes(handle)))</li>
+          <li class="mono">ownerOf(tokenId) == account</li>
+        </ol>
+        <p><span class="en"><code>handleOf</code> returns the bare handle, such as 218, not 218.ai. <code>ownerOfHandle</code> is not called. <code>ownerOfHandle("218.ai")</code> is not a gate.</span><span class="zh"><code>handleOf</code> 返回不带后缀的名字，例如 218，而不是 218.ai。合约不调用 <code>ownerOfHandle</code>。<code>ownerOfHandle("218.ai")</code> 不是校验条件。</span></p>
+        <p class="mono muted">registry 0x60B9262456dE011F7d15a54CdD8c48bAaa8B022F</p>
+      </div>
+    </section>
+
+    <section class="section" id="owner">
+      <h2><span class="en">Owner permissions</span><span class="zh">所有者权限</span></h2>
+      <div class="owner-none">
+        <div>
+          <p class="kicker" style="color:#e7c7a2"><span class="en">Owner permissions</span><span class="zh">所有者权限</span></p>
+          <strong><span class="en">None</span><span class="zh">无</span></strong>
+        </div>
+        <p><span class="en">There is no owner, admin, pause, fee, upgrade, or sweep. A seal cannot be edited. Value sent to the contract cannot be recovered, because nobody has that power.</span><span class="zh">没有所有者、管理员、暂停、费用、升级或提取。印记不能修改。打进合约的金额也无法取回，因为没有人有这个权力。</span></p>
+      </div>
+    </section>
+
+    <section class="section" id="bscscan">
+      <h2>BscScan</h2>
+      <p><span class="en">After deployment, open the address and confirm the runtime bytecode matches <code>deploy/runtime.hex</code> and the keccak in <code>DEPLOY.md</code>. Source verification uses solc 0.8.28, optimizer on, 200 runs, Cancun, no via-IR. Until then the explorer page has no contract code.</span><span class="zh">部署之后，打开这个地址，核对运行时字节码是否与 <code>deploy/runtime.hex</code> 以及 <code>DEPLOY.md</code> 里的 keccak 一致。源码验证使用 solc 0.8.28、优化器开启、200 次、Cancun、不用 via-IR。在那之前，浏览器页面上没有合约代码。</span></p>
+      <p><a href="https://bscscan.com/address/0x79E48BE7a6AfA67eE82aF4d3cA75387dE7F599F9#code">bscscan.com/address/0x79E48BE7a6AfA67eE82aF4d3cA75387dE7F599F9#code</a></p>
+      <p class="muted"><span class="en">Placeholder until the contract is deployed and the source is verified. Do not treat an empty code tab as a verified match.</span><span class="zh">这是占位链接，要等合约部署并且源码验证之后才有意义。代码栏为空，不能当成已经核对通过。</span></p>
+    </section>
+
+    <section class="section" id="baw">
+      <h2><span class="en">Agent wallet: preview, then confirm, then execute</span><span class="zh">代理钱包：先预览，确认后才执行</span></h2>
+      <p><span class="en">Writes go through the official <code>baw contract-call</code> flow. Preview, show the parsed terms and risks, wait for an explicit yes, then execute. <code>requireConfirmation: false</code> does not skip that yes. A request to skip confirmation is refused.</span><span class="zh">写操作只走官方 <code>baw contract-call</code> 流程。先预览，展示解析后的条款和风险，等到明确的同意，再执行。<code>requireConfirmation: false</code> 也不能跳过这一次同意。要求跳过确认的请求会被拒绝。</span></p>
+      <div class="card stack">
+        <h3><span class="en">Example: seal the hash of “Handleseal sample”, label “sample”</span><span class="zh">例子：给 “Handleseal sample” 的哈希盖印，标签 “sample”</span></h3>
+        <p class="mono">content hash 0xd79e8067785affc93857181a5c7950e53785b33faa00ca1128d044283f94a566</p>
+        <pre class="hash-box">baw wallet settings --json
+baw wallet address --json
+
+baw contract-call preview \
+  --binanceChainId 56 \
+  --from &lt;your agent wallet&gt; \
+  --to 0x79E48BE7a6AfA67eE82aF4d3cA75387dE7F599F9 \
+  --value 0 \
+  --inputData 0x80262338d79e8067785affc93857181a5c7950e53785b33faa00ca1128d044283f94a5660000000000000000000000000000000000000000000000000000000000000040000000000000000000000000000000000000000000000000000000000000000673616d706c650000000000000000000000000000000000000000000000000000 \
+  --json</pre>
+        <p><span class="en">Show the person: chain 56, value 0, the content hash, the public label, that the seal is permanent, and every risk the preview returns. Then wait. Only after a clear yes:</span><span class="zh">向本人展示：链 56、金额 0、内容哈希、公开标签、印记不可更改，以及预览返回的每一条风险。然后等待。只有明确同意之后：</span></p>
+        <pre class="hash-box">baw contract-call execute --requestId &lt;requestId from that preview&gt; --json</pre>
+        <h3><span class="en">Example: witness seal 1</span><span class="zh">例子：见证 1 号印</span></h3>
+        <pre class="hash-box">baw contract-call preview \
+  --binanceChainId 56 \
+  --from &lt;your agent wallet&gt; \
+  --to 0x79E48BE7a6AfA67eE82aF4d3cA75387dE7F599F9 \
+  --value 0 \
+  --inputData 0x9b9419c40000000000000000000000000000000000000000000000000000000000000001 \
+  --json</pre>
+        <p class="muted"><span class="en">Same rule: show the parsed preview, then execute only after a new explicit yes. Full instructions for an agent are in <code>skill/SKILL.md</code>.</span><span class="zh">规则相同：展示解析后的预览，只有再次明确同意才执行。给代理的完整说明在 <code>skill/SKILL.md</code>。</span></p>
+      </div>
+    </section>
+
+    <section class="section" id="redlines">
+      <h2><span class="en">Red lines</span><span class="zh">红线</span></h2>
+      <div class="card">
+        <ul>
+          <li><span class="en">No private keys, seed phrases, API secrets, or pairing codes.</span><span class="zh">不接收私钥、助记词、API 密钥或配对码。</span></li>
+          <li><span class="en">No backend, no accounts, no server session, no third-party QR or pairing-code login.</span><span class="zh">没有后端、没有账户、没有服务端会话，也不使用第三方二维码或配对码登录。</span></li>
+          <li><span class="en">No general lookup of other people's wallets by Agent ID name.</span><span class="zh">没有按 Agent ID 名字查询别人钱包的通用功能。</span></li>
+          <li><span class="en">This repository does not deploy or broadcast. Deployment is a later paid step and must be quoted again and confirmed.</span><span class="zh">本仓库不部署、不广播。部署是以后单独的付费步骤，必须重新报价并得到确认。</span></li>
+          <li><span class="en">No yield, rewards, or returns are promised.</span><span class="zh">不承诺收益、奖励或回报。</span></li>
+        </ul>
+      </div>
+    </section>
+  </main>
+  <footer class="foot">
+    <p><span class="en">Experimental software. No yield, no rewards, no returns.</span><span class="zh">实验性软件。不承诺收益、奖励或回报。</span></p>
+    <p class="foot-meta"><span>chain 56</span><span id="deploy-badge" class="status">…</span><a id="contract-link" href="docs.html#bscscan"></a></p>
+  </footer>
+  <script src="vendor/ethers.umd.min.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/abi.js"></script>
+  <script src="js/site.js"></script>
+</body>
+</html>

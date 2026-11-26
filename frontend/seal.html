@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Seal · Handleseal</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/site.css">
+  <script>
+    (function () {
+      var saved = null;
+      try { saved = localStorage.getItem("handleseal.lang"); } catch (e) {}
+      var lang = saved || ((navigator.language || "").toLowerCase().indexOf("zh") === 0 ? "zh" : "en");
+      if (lang === "zh") document.documentElement.classList.add("zh");
+      document.documentElement.lang = lang === "zh" ? "zh-Hans" : "en";
+    })();
+  </script>
+</head>
+<body>
+  <header class="top">
+    <div class="top-row">
+      <a class="brand" href="index.html"><img src="favicon.svg" width="42" height="42" alt=""><span class="brand-name">Handleseal</span></a>
+      <button type="button" class="lang-btn" id="lang-btn"><span class="en">中文</span><span class="zh">English</span></button>
+    </div>
+    <nav class="nav">
+      <a href="index.html"><span class="en">About</span><span class="zh">介绍</span></a>
+      <a href="seal.html" aria-current="page"><span class="en">Seal</span><span class="zh">盖印</span></a>
+      <a href="verify.html"><span class="en">Verify</span><span class="zh">核验</span></a>
+      <a href="seals.html"><span class="en">Public seals</span><span class="zh">公开印</span></a>
+      <a href="docs.html"><span class="en">Docs</span><span class="zh">文档</span></a>
+    </nav>
+  </header>
+  <main>
+    <p class="kicker"><span class="en">Injected wallet only · value 0</span><span class="zh">仅限注入式钱包 · 金额 0</span></p>
+    <h1><span class="en">Hash here. Seal the hash.</span><span class="zh">在这里做哈希，再把哈希盖上。</span></h1>
+    <p class="lede"><span class="en">Connect an injected EIP-1193 wallet, such as a wallet in-app browser. There is no pairing code and no QR login.</span><span class="zh">连接注入的 EIP-1193 钱包，例如钱包的应用内浏览器。没有配对码，也没有扫码登录。</span></p>
+
+    <section class="section stack">
+      <div class="btn-row">
+        <button type="button" class="btn" id="connect-btn"><span class="en">Connect wallet</span><span class="zh">连接钱包</span></button>
+        <span id="hasher-status" class="status">…</span>
+      </div>
+      <div id="wallet-status"></div>
+      <div id="agent-status"></div>
+    </section>
+
+    <section class="section stack">
+      <div class="tabs">
+        <button type="button" class="btn-ghost" id="tab-text" aria-selected="true"><span class="en">Text</span><span class="zh">文本</span></button>
+        <button type="button" class="btn-ghost" id="tab-file" aria-selected="false"><span class="en">File</span><span class="zh">文件</span></button>
+      </div>
+      <div id="pane-text">
+        <label for="text-input"><span class="en">Text to hash. Exact UTF-8 bytes, including spaces and newlines.</span><span class="zh">要哈希的文本。按原始 UTF-8 字节计算，空格和换行都算。</span></label>
+        <textarea id="text-input" class="mono" spellcheck="false"></textarea>
+      </div>
+      <div id="pane-file" class="hidden">
+        <label for="file-input"><span class="en">File to hash. It stays on this device.</span><span class="zh">要哈希的文件。它留在这台设备上。</span></label>
+        <input id="file-input" type="file">
+        <p id="file-note" class="file-name"></p>
+      </div>
+      <div>
+        <div class="meter"><span><span class="en">Content hash</span><span class="zh">内容哈希</span></span><button type="button" class="btn-ghost" id="copy-hash"><span class="en">Copy</span><span class="zh">复制</span></button></div>
+        <div id="content-hash" class="hash-box">…</div>
+      </div>
+      <div>
+        <label for="label-input"><span class="en">Optional public label</span><span class="zh">可选的公开标签</span></label>
+        <input id="label-input" type="text" autocomplete="off">
+        <p id="label-bytes" class="meter">0 / 80</p>
+      </div>
+      <div class="btn-row">
+        <button type="button" class="btn" id="review-btn"><span class="en">Review seal</span><span class="zh">核对盖印</span></button>
+      </div>
+      <div id="review-panel" class="card stack hidden"></div>
+      <button type="button" class="btn hidden" id="confirm-btn"><span class="en">Confirm and submit</span><span class="zh">确认并提交</span></button>
+      <div id="seal-result"></div>
+    </section>
+
+    <section class="section">
+      <h2><span class="en">Your seals</span><span class="zh">你盖过的印</span></h2>
+      <p class="muted"><span class="en">Only the connected account. This is not a directory of other people.</span><span class="zh">只显示当前连接的账户，不是别人的名录。</span></p>
+      <div id="your-seals"></div>
+    </section>
+  </main>
+  <footer class="foot">
+    <p><span class="en">Experimental software. No yield, no rewards, no returns.</span><span class="zh">实验性软件。不承诺收益、奖励或回报。</span></p>
+    <p class="foot-meta"><span>chain 56</span><span id="deploy-badge" class="status">…</span><a id="contract-link" href="docs.html#bscscan"></a></p>
+  </footer>
+  <script src="vendor/ethers.umd.min.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/abi.js"></script>
+  <script src="js/site.js"></script>
+  <script src="js/seal.js"></script>
+</body>
+</html>

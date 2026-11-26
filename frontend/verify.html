@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Verify · Handleseal</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/site.css">
+  <script>
+    (function () {
+      var saved = null;
+      try { saved = localStorage.getItem("handleseal.lang"); } catch (e) {}
+      var lang = saved || ((navigator.language || "").toLowerCase().indexOf("zh") === 0 ? "zh" : "en");
+      if (lang === "zh") document.documentElement.classList.add("zh");
+      document.documentElement.lang = lang === "zh" ? "zh-Hans" : "en";
+    })();
+  </script>
+</head>
+<body>
+  <header class="top">
+    <div class="top-row">
+      <a class="brand" href="index.html"><img src="favicon.svg" width="42" height="42" alt=""><span class="brand-name">Handleseal</span></a>
+      <button type="button" class="lang-btn" id="lang-btn"><span class="en">中文</span><span class="zh">English</span></button>
+    </div>
+    <nav class="nav">
+      <a href="index.html"><span class="en">About</span><span class="zh">介绍</span></a>
+      <a href="seal.html"><span class="en">Seal</span><span class="zh">盖印</span></a>
+      <a href="verify.html" aria-current="page"><span class="en">Verify</span><span class="zh">核验</span></a>
+      <a href="seals.html"><span class="en">Public seals</span><span class="zh">公开印</span></a>
+      <a href="docs.html"><span class="en">Docs</span><span class="zh">文档</span></a>
+    </nav>
+  </header>
+  <main>
+    <p class="kicker"><span class="en">By seal id or content hash</span><span class="zh">按印记编号或内容哈希</span></p>
+    <h1><span class="en">Check a seal. Not a person.</span><span class="zh">核验一枚印，而不是一个人。</span></h1>
+    <p class="lede"><span class="en">There is no search by handle. A handle is not a lookup key for someone else's wallet.</span><span class="zh">不能按名字搜索。名字不是查询别人钱包的钥匙。</span></p>
+    <form id="verify-form" class="section stack">
+      <div class="split">
+        <div>
+          <label for="seal-id"><span class="en">Seal id</span><span class="zh">印记编号</span></label>
+          <input id="seal-id" type="text" inputmode="numeric" autocomplete="off" placeholder="1">
+        </div>
+        <div>
+          <label for="content-lookup"><span class="en">Content hash</span><span class="zh">内容哈希</span></label>
+          <input id="content-lookup" class="mono" type="text" autocomplete="off" spellcheck="false" placeholder="0x…">
+        </div>
+      </div>
+      <button class="btn" type="submit"><span class="en">Look up</span><span class="zh">查询</span></button>
+    </form>
+    <div id="verify-out" class="stack"></div>
+    <section class="section stack">
+      <h2><span class="en">Check a preimage locally</span><span class="zh">在本地核对原文</span></h2>
+      <p class="muted"><span class="en">Paste the text or pick the file you believe was hashed. Nothing is uploaded. This compares the hash with the seal above.</span><span class="zh">粘贴你认为被哈希过的文字，或选择那个文件。不会上传。结果只和上面的印记比对。</span></p>
+      <label for="preimage-text"><span class="en">Text</span><span class="zh">文本</span></label>
+      <textarea id="preimage-text" class="mono" spellcheck="false"></textarea>
+      <label for="preimage-file"><span class="en">Or a file</span><span class="zh">或一个文件</span></label>
+      <input id="preimage-file" type="file">
+      <div id="preimage-out" class="hash-box"></div>
+    </section>
+  </main>
+  <footer class="foot">
+    <p><span class="en">Experimental software. No yield, no rewards, no returns.</span><span class="zh">实验性软件。不承诺收益、奖励或回报。</span></p>
+    <p class="foot-meta"><span>chain 56</span><span id="deploy-badge" class="status">…</span><a id="contract-link" href="docs.html#bscscan"></a></p>
+  </footer>
+  <script src="vendor/ethers.umd.min.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/abi.js"></script>
+  <script src="js/site.js"></script>
+  <script src="js/verify.js"></script>
+</body>
+</html>

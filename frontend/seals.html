@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Public seals · Handleseal</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/site.css">
+  <script>
+    (function () {
+      var saved = null;
+      try { saved = localStorage.getItem("handleseal.lang"); } catch (e) {}
+      var lang = saved || ((navigator.language || "").toLowerCase().indexOf("zh") === 0 ? "zh" : "en");
+      if (lang === "zh") document.documentElement.classList.add("zh");
+      document.documentElement.lang = lang === "zh" ? "zh-Hans" : "en";
+    })();
+  </script>
+</head>
+<body>
+  <header class="top">
+    <div class="top-row">
+      <a class="brand" href="index.html"><img src="favicon.svg" width="42" height="42" alt=""><span class="brand-name">Handleseal</span></a>
+      <button type="button" class="lang-btn" id="lang-btn"><span class="en">中文</span><span class="zh">English</span></button>
+    </div>
+    <nav class="nav">
+      <a href="index.html"><span class="en">About</span><span class="zh">介绍</span></a>
+      <a href="seal.html"><span class="en">Seal</span><span class="zh">盖印</span></a>
+      <a href="verify.html"><span class="en">Verify</span><span class="zh">核验</span></a>
+      <a href="seals.html" aria-current="page"><span class="en">Public seals</span><span class="zh">公开印</span></a>
+      <a href="docs.html"><span class="en">Docs</span><span class="zh">文档</span></a>
+    </nav>
+  </header>
+  <main>
+    <p class="kicker"><span class="en">Voluntary labels only</span><span class="zh">只列出自愿公开的标签</span></p>
+    <h1><span class="en">Recent public seals.</span><span class="zh">最近的公开印。</span></h1>
+    <p class="lede"><span class="en">These are seals whose authors chose a public label. Unlabeled seals stay off this list. This is not a directory of Agent IDs, and it cannot be searched by name.</span><span class="zh">这里只显示作者自己写了公开标签的印。没有标签的印不会出现。这不是 Agent ID 名录，也不能按名字搜索。</span></p>
+    <p><button type="button" class="btn-ghost" id="recent-again"><span class="en">Reload</span><span class="zh">重新加载</span></button></p>
+    <div id="recent-out" class="section"></div>
+  </main>
+  <footer class="foot">
+    <p><span class="en">Experimental software. No yield, no rewards, no returns.</span><span class="zh">实验性软件。不承诺收益、奖励或回报。</span></p>
+    <p class="foot-meta"><span>chain 56</span><span id="deploy-badge" class="status">…</span><a id="contract-link" href="docs.html#bscscan"></a></p>
+  </footer>
+  <script src="vendor/ethers.umd.min.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/abi.js"></script>
+  <script src="js/site.js"></script>
+  <script src="js/seals.js"></script>
+</body>
+</html>

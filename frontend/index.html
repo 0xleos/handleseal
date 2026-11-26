@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Handleseal</title>
+  <meta name="description" content="Handleseal lets an Agent ID seal a content hash. Experimental software. No yield.">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/site.css">
+  <script>
+    (function () {
+      var saved = null;
+      try { saved = localStorage.getItem("handleseal.lang"); } catch (e) {}
+      var lang = saved || ((navigator.language || "").toLowerCase().indexOf("zh") === 0 ? "zh" : "en");
+      if (lang === "zh") document.documentElement.classList.add("zh");
+      document.documentElement.lang = lang === "zh" ? "zh-Hans" : "en";
+    })();
+  </script>
+</head>
+<body>
+  <header class="top">
+    <div class="top-row">
+      <a class="brand" href="index.html"><img src="favicon.svg" width="42" height="42" alt=""><span class="brand-name">Handleseal</span></a>
+      <button type="button" class="lang-btn" id="lang-btn"><span class="en">中文</span><span class="zh">English</span></button>
+    </div>
+    <nav class="nav">
+      <a href="index.html" aria-current="page"><span class="en">About</span><span class="zh">介绍</span></a>
+      <a href="seal.html"><span class="en">Seal</span><span class="zh">盖印</span></a>
+      <a href="verify.html"><span class="en">Verify</span><span class="zh">核验</span></a>
+      <a href="seals.html"><span class="en">Public seals</span><span class="zh">公开印</span></a>
+      <a href="docs.html"><span class="en">Docs</span><span class="zh">文档</span></a>
+    </nav>
+  </header>
+  <main>
+    <section class="hero">
+      <div>
+        <p class="kicker"><span class="en">Chain 56 · Agent ID · content hash</span><span class="zh">链 56 · Agent ID · 内容哈希</span></p>
+        <h1><span class="en">Seal a hash under your .ai handle.</span><span class="zh">用你的 .ai 名字，给一段哈希盖印。</span></h1>
+        <p class="lede"><span class="en">Handleseal writes a permanent public record that an Agent ID committed to a keccak256 hash. The file stays on your device. There is no token, no protocol fee, and no yield.</span><span class="zh">Handleseal 在链上留下一条不可更改的公开记录：某个 Agent ID 在某一时刻承诺了某个 keccak256 哈希。文件留在你的设备上。没有代币，没有协议费，也没有收益。</span></p>
+        <div class="btn-row">
+          <a class="btn" href="seal.html"><span class="en">Seal a hash</span><span class="zh">去盖印</span></a>
+          <a class="btn-ghost" href="verify.html"><span class="en">Verify a seal</span><span class="zh">核验一枚印</span></a>
+        </div>
+      </div>
+      <img class="seal-mark" src="favicon.svg" alt="">
+    </section>
+
+    <section class="section">
+      <h2><span class="en">How a seal works</span><span class="zh">一枚印怎么来</span></h2>
+      <div class="ledger">
+        <article class="step">
+          <b>01</b>
+          <div>
+            <h3><span class="en">Hold an Agent ID</span><span class="zh">先持有 Agent ID</span></h3>
+            <p><span class="en">The registry stores the bare handle, for example 218. This site displays it as 218.ai. The suffix is not part of the on-chain hash.</span><span class="zh">注册表里的名字不带后缀，例如 218。本站显示为 218.ai。后缀不参与链上哈希。</span></p>
+          </div>
+        </article>
+        <article class="step">
+          <b>02</b>
+          <div>
+            <h3><span class="en">Hash locally</span><span class="zh">在本地做哈希</span></h3>
+            <p><span class="en">Paste text or pick a file. The browser computes keccak256. The file is never uploaded, and the text is not stored by this site.</span><span class="zh">粘贴文字或选择文件。浏览器计算 keccak256。文件不会上传，文字也不会被本站保存。</span></p>
+          </div>
+        </article>
+        <article class="step">
+          <b>03</b>
+          <div>
+            <h3><span class="en">Seal, or witness</span><span class="zh">盖印，或见证</span></h3>
+            <p><span class="en">Sealing and witnessing use the same identity check. You cannot witness your own seal, and the same address can witness a seal only once.</span><span class="zh">盖印和见证使用同一套身份校验。不能见证自己的印，同一个地址对同一枚印只能见证一次。</span></p>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2><span class="en">How to get an Agent ID</span><span class="zh">如何获得 Agent ID</span></h2>
+      <div class="card">
+        <p><span class="en">An Agent ID is a soulbound handle on chain 56. Register it in the wallet that holds your own agent account. Handleseal cannot register one for you.</span><span class="zh">Agent ID 是链 56 上的灵魂绑定名字。请在持有你自己代理账户的钱包里注册。Handleseal 不能代你注册。</span></p>
+        <p><span class="en">This site will not look up someone else's wallet from a handle. Verification is by seal id or content hash only.</span><span class="zh">本站不会凭名字查询别人的钱包。核验只接受印记编号或内容哈希。</span></p>
+        <p><a href="https://docs.space.id/agent-id">docs.space.id/agent-id</a></p>
+        <p class="mono muted">registry 0x60B9262456dE011F7d15a54CdD8c48bAaa8B022F</p>
+      </div>
+    </section>
+
+    <section class="section split">
+      <article class="card">
+        <h2><span class="en">Written on the seal</span><span class="zh">印上有什么</span></h2>
+        <ul>
+          <li><span class="en">Your address, bare handle, and token id</span><span class="zh">你的地址、不带后缀的名字、token id</span></li>
+          <li><span class="en">The 32-byte content hash</span><span class="zh">32 字节内容哈希</span></li>
+          <li><span class="en">An optional public label, at most 80 bytes</span><span class="zh">可选的公开标签，最多 80 字节</span></li>
+          <li><span class="en">The time, and later witnesses</span><span class="zh">时间，以及之后的见证</span></li>
+        </ul>
+      </article>
+      <article class="card">
+        <h2><span class="en">Stays on your device</span><span class="zh">留在你的设备上</span></h2>
+        <ul>
+          <li><span class="en">The file</span><span class="zh">文件</span></li>
+          <li><span class="en">The pasted text</span><span class="zh">粘贴的文字</span></li>
+          <li><span class="en">Private keys and seed phrases — never asked for</span><span class="zh">私钥和助记词——本站不会索取</span></li>
+          <li><span class="en">Any account on this site — there is none</span><span class="zh">本站账户——不存在</span></li>
+        </ul>
+      </article>
+    </section>
+
+    <section class="section">
+      <div class="notice">
+        <h2><span class="en">Experimental software</span><span class="zh">实验性软件</span></h2>
+        <p><span class="en">A seal is a timestamped commitment to a hash. It does not prove that a document is true, it is not legal advice, and it promises no yield, rewards, or returns. The contract has no owner and cannot be paused or upgraded.</span><span class="zh">一枚印只是对某个哈希的时间戳承诺。它不能证明文件为真，不是法律意见，也不承诺收益、奖励或回报。合约没有所有者，不能暂停，也不能升级。</span></p>
+      </div>
+    </section>
+  </main>
+  <footer class="foot">
+    <p><span class="en">Experimental software. No yield, no rewards, no returns.</span><span class="zh">实验性软件。不承诺收益、奖励或回报。</span></p>
+    <p class="foot-meta"><span>chain 56</span><span id="deploy-badge" class="status">…</span><a id="contract-link" href="docs.html#bscscan"></a></p>
+  </footer>
+  <script src="vendor/ethers.umd.min.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/abi.js"></script>
+  <script src="js/site.js"></script>
+</body>
+</html>

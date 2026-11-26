@@ -1,0 +1,7 @@
+ethers.umd.min.js
+package: ethers@5.7.2
+license: MIT
+sha256: a66293a6a2bb4dee061a68612be0be3c5c0ab7e4068ab8d98a4a357baf664c73
+source: https://github.com/ethers-io/ethers.js/tree/v5.7.2
+cdn: https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js
+purpose: local keccak256 and ABI coding in the static site. No build step.

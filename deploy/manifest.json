@@ -1,0 +1,20 @@
+{
+  "contract": "Handleseal",
+  "solc": "0.8.28+commit.7893614a",
+  "optimizer": true,
+  "optimizer_runs": 200,
+  "via_ir": false,
+  "evm_version": "cancun",
+  "bytecode_hash": "ipfs",
+  "cbor_metadata": true,
+  "constructor_args": null,
+  "salt_preimage": "handleseal-v1",
+  "salt": "0xefb4a59946552036bbe4e4fa2ba001fcb63c69dc7313b156fe1eff80f1e79d73",
+  "initcode_bytes": 4845,
+  "initcode_keccak256": "0x49b53f6e7e6929b97c71e9f5e3e8fd772a0fb7814310a64c79bbfbb4cce4315a",
+  "runtime_bytes": 4817,
+  "runtime_keccak256": "0x3f6d8141bdb5a280e44aaa59eec99502e0569f1044d852857921ec47524952fb",
+  "factory": "0x4e59b44847b379578588920cA78FbF26c0B4956C",
+  "address": "0x79E48BE7a6AfA67eE82aF4d3cA75387dE7F599F9",
+  "formula": "keccak256(0xff ++ factory ++ salt ++ keccak256(initcode))[12:]"
+}
